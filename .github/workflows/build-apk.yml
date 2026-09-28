@@ -1,0 +1,41 @@
+name: Build BiReN Final APK
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+
+      - name: Extract BiReN project
+        run: |
+          mkdir project
+          unzip -o BiReN_New_Start_Premium_2026.zip -d project
+
+      - name: Build APK
+        run: |
+          gradle -p project/BiReN_Android_v1.0_New_Start assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: BiReN-Final-APK
+          path: project/BiReN_Android_v1.0_New_Start/app/build/outputs/apk/debug/app-debug.apk
